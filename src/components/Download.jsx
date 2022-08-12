@@ -1,5 +1,43 @@
 import React from "react";
 import DownloadAds from "./DownloadAds";
+import { ConnectButton } from '@rainbow-me/rainbowkit';
+import '@rainbow-me/rainbowkit/styles.css';
+import {
+  getDefaultWallets,
+  RainbowKitProvider,
+  darkTheme,
+  apiProvider,
+  
+  
+} from '@rainbow-me/rainbowkit';
+import {
+  chain,
+  configureChains,
+  createClient,
+  WagmiConfig,
+} from 'wagmi';
+import { alchemyProvider } from 'wagmi/providers/alchemy';
+import { publicProvider } from 'wagmi/providers/public';
+
+const { chains, provider } = configureChains(
+  [chain.mainnet, chain.polygon, chain.polygonMumbai, chain.optimism, chain.arbitrum],
+  [
+    alchemyProvider({ apiKey: process.env.ALCHEMY_ID }),
+    publicProvider()
+  ]
+);
+
+const { connectors } = getDefaultWallets({
+  appName: 'My RainbowKit App',
+  chains
+});
+
+const wagmiClient = createClient({
+  autoConnect: true,
+  connectors,
+  provider
+})
+
 
 function Download() {
   return (
@@ -17,8 +55,14 @@ function Download() {
         </span>
       </div>
       {/* dowload ads */}
-      <div className="mt-14">
-        <DownloadAds />
+      <div >
+      <WagmiConfig client={wagmiClient}>
+              <RainbowKitProvider chains={chains} theme={darkTheme()}>
+                <br/>
+          <div className = "text-sm">
+            <ConnectButton /></div>
+            </RainbowKitProvider>
+            </WagmiConfig>
       </div>
     </div>
   );
